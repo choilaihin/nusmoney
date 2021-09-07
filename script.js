@@ -1,7 +1,7 @@
 // (c) Anuflora Systems 
 const balance = document.getElementById('balance');
-const money_plus = document.getElementById('deposit');
-const money_minus = document.getElementById('loan');
+// const money_plus = document.getElementById('deposit');
+// const money_minus = document.getElementById('loan');
 const list = document.getElementById('list');
 const form = document.getElementById('form');
 const custname = document.getElementById('custname');
@@ -22,29 +22,29 @@ const TransactionDataAll = [
 
  var TransactionData = null;
 
-// Add transactions to DOM list
 function addTransactionDOM(transaction) {
-  const deposit_item = document.createElement('li');
-
-  deposit_item.classList.add('plus');
-  deposit_item.innerHTML = `
-  ${transaction.customername}-${transaction.bank}  <span> $ ${Math.abs(
-    transaction.deposit  
-  )}</span> 
-  `;
-
-  list.appendChild(deposit_item);
-
-  const loan_item = document.createElement('li');
-
-  loan_item.classList.add('minus');
-  loan_item.innerHTML = `
-  ${transaction.customername}-${transaction.bank} <span> -$ ${Math.abs(
-    transaction.loan  
-  )}</span> 
-  `;
-
-  list.appendChild(loan_item);
+  const bank_balance_item = document.createElement('li');
+  const bank_balance = transaction.deposit - transaction.loan;
+  if(bank_balance>0)
+  {
+    bank_balance_item.classList.add('plus');
+    bank_balance_item.innerHTML = `${transaction.customername}-${transaction.bank}  
+    <span> $ ${Math.abs(bank_balance)}</span>`;
+  }
+  else if(bank_balance<0)
+  {
+    bank_balance_item.classList.add('minus');
+    bank_balance_item.innerHTML = `${transaction.customername}-${transaction.bank}  
+    <span> -$ ${Math.abs(bank_balance)}</span>`;
+  }
+  else
+  {
+    bank_balance_item.classList.add('zero');
+    bank_balance_item.innerHTML = `${transaction.customername}-${transaction.bank}  
+    <span> $ ${Math.abs(bank_balance)}</span>`;   
+  }
+  
+  list.appendChild(bank_balance_item);
 }
 
 // Update the balance, deposit and loan
@@ -55,18 +55,77 @@ function updateValues() {
   const total_loan = loans.reduce((acc, item) => (acc += item), 0).toFixed(2);
   const bal = total_deposit - total_loan;
   balance.innerText = `$${bal}`;
-  money_plus.innerText = `$${total_deposit}`;
-  money_minus.innerText = `$${total_loan}`;
+  // money_plus.innerText = `$${total_deposit}`;
+  // money_minus.innerText = `$${total_loan}`;
   reco.innerText = (bal >= 0)? "You Have Sound Financial Health": "Your Financial Health is Weak";
+
+  d3.select("svg").remove();
+
+  var svg = d3
+    .select(".bar-chart")
+    .append("svg")
+    .attr("width", 350)
+    .attr("height", 50);
+
+  svg
+    .append("rect")
+    .attr("transform", function (d) {
+      return "translate(" + 70 + "," +0+ ")";
+    })
+    .attr("fill", "blue")
+    .attr("height", 20)
+    .attr("width", total_deposit/100);
+
+  svg
+    .append("rect")
+    .attr("transform", function (d) {
+      return "translate(" + 70 + "," +25+ ")";
+    })
+    .attr("fill", "red")
+    .attr("height", 20)
+    .attr("width", total_loan/100);
+
+  svg
+    .append("text")
+    .attr("transform", function (d) {
+      return "translate(0," + Number(15) + ")";
+    })
+    .attr("fill", "blue")
+    .text("DEPOSIT");   
+
+  svg
+    .append("text")
+    .attr("transform", function (d) {
+      return "translate("+Number(75+total_deposit/100)+"," + Number(15) + ")";
+    })
+    .attr("fill", "black")
+    .text(`$${total_deposit}`);   
+
+  svg
+    .append("text")
+    .attr("transform", function (d) {
+      return "translate(22," + Number(40) + ")";
+    })
+    .attr("fill", "red")
+    .text("LOAN");   
+
+  svg
+    .append("text")
+    .attr("transform", function (d) {
+      return "translate("+Number(75+total_loan/100)+"," + Number(40) + ")";
+    })
+    .attr("fill", "black")
+    .text(`$${total_loan}`); 
+
 }
 
-function init() {
-  list.innerHTML = '';
-  reco.innerHTML = '';
-  TransactionData = [...TransactionDataAll];
-  TransactionData.forEach(addTransactionDOM);
-  updateValues();
-}
+// function init() {
+//   list.innerHTML = '';
+//   reco.innerHTML = '';
+//   TransactionData = [...TransactionDataAll];
+//   TransactionData.forEach(addTransactionDOM);
+//   updateValues();
+// }
 
 function reset() {
   list.innerHTML = '';
@@ -77,24 +136,13 @@ function reset() {
 }
 
 function filterTransaction(e) {
-  e.preventDefault();  //to prevent form from submitting and refreshing the page
+  e.preventDefault();  
   list.innerHTML = '';
   reco.innerHTML = '';
-  TransactionData = TransactionDataAll.filter(tran => tran.customername == custname.value);  
+  TransactionData = TransactionDataAll.filter(tran => tran.customername.toLowerCase() == custname.value.toLowerCase());  
   TransactionData.forEach(addTransactionDOM);
   updateValues(); 
 }
 
-//Declare username and passwords here
-const loginDetails = {"flora":"123", "mikhil":"234", "sashil":"345", 
-                      "jack":"456", "jill":"567"};
-
-function loginFilter(e){
-  e.preventDefault();
-  if (password.value == loginDetails[custname.value.toLowerCase()]) {
-    filterTransaction(e);
-  } 
-}
-
-form.addEventListener('submit', loginFilter);
+form.addEventListener('submit', filterTransaction);
 b2.addEventListener('click',reset);
