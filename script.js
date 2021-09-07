@@ -68,6 +68,14 @@ function init() {
   updateValues();
 }
 
+function reset() {
+  list.innerHTML = '';
+  reco.innerHTML = '';
+  TransactionData = [];
+  TransactionData.forEach(addTransactionDOM);
+  updateValues();
+}
+
 function filterTransaction(e) {
   e.preventDefault();  //to prevent form from submitting and refreshing the page
   list.innerHTML = '';
@@ -77,17 +85,16 @@ function filterTransaction(e) {
   updateValues(); 
 }
 
-const loginDetails = {"Flora":"123", "Mikhil":"234", "Sashil":"345", 
-                      "Jack":"456", "Jill":"567"};
+//Declare username and passwords here
+const loginDetails = {"flora":"123", "mikhil":"234", "sashil":"345", 
+                      "jack":"456", "jill":"567"};
 
-function loginFilter(){
-  if (password = loginDetails[custname]) {
-    init();
-    filterTransaction();
+function loginFilter(e){
+  e.preventDefault();
+  if (password.value == loginDetails[custname.value.toLowerCase()]) {
+    filterTransaction(e);
   } 
 }
 
-// init();
 form.addEventListener('submit', loginFilter);
-b1.addEventListener('click',filterTransaction);
-b2.addEventListener('click',init);
+b2.addEventListener('click',reset);
