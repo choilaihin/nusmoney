@@ -5,14 +5,18 @@ const money_minus = document.getElementById('loan');
 const list = document.getElementById('list');
 const form = document.getElementById('form');
 const custname = document.getElementById('custname');
+const password = document.getElementById('password');
 const reco = document.getElementById('reco');
+const b1 = document.getElementById('b1');
+const b2 = document.getElementById('b2');
 
 const TransactionDataAll = [
    { id: 1, customername: 'Flora', bank: 'DBS', deposit: 3000, loan: 2000 },
    { id: 2, customername: 'Flora', bank: 'OCBC', deposit: 4000, loan: 2000 },
    { id: 3, customername: 'Mikhil', bank: 'DBS', deposit: 3000, loan: 2000 },
    { id: 4, customername: 'Sashil', bank: 'UOB', deposit: 6000, loan: 1000 },
-   { id: 5, customername: 'Jack', bank: 'UOB', deposit: 6000, loan: 8000 }
+   { id: 5, customername: 'Jack', bank: 'UOB', deposit: 6000, loan: 8000 },
+   { id: 6, customername: 'Jill', bank: 'UOB', deposit: 7000, loan: 4000 }
 
   ];
 
@@ -73,5 +77,17 @@ function filterTransaction(e) {
   updateValues(); 
 }
 
-init();
-form.addEventListener('submit', filterTransaction);
+const loginDetails = {"Flora":"123", "Mikhil":"234", "Sashil":"345", 
+                      "Jack":"456", "Jill":"567"};
+
+function loginFilter(){
+  if (password = loginDetails[custname]) {
+    init();
+    filterTransaction();
+  } 
+}
+
+// init();
+form.addEventListener('submit', loginFilter);
+b1.addEventListener('click',filterTransaction);
+b2.addEventListener('click',init);
